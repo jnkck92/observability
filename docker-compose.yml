@@ -29,7 +29,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   alloy:
-    image: grafana/alloy:1.19.2
+    image: grafana/alloy:1.19.1
     container_name: alloy
     networks: [ observability ]
     volumes:
