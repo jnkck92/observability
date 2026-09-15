@@ -12,3 +12,11 @@ scrape_configs:
         labels:
           app: einsatzlog112
           component: backend
+
+  - job_name: 'monitor-backend'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['monitor-backend:8080']
+        labels:
+          app: monitor
+          component: backend
