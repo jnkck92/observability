@@ -1,0 +1,80 @@
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "5s"
+}
+
+discovery.relabel "docker_containers" {
+  targets = discovery.docker.containers.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    target_label  = "container"
+    regex         = "/(.*)"
+  }
+}
+
+loki.source.docker "default" {
+  host             = "unix:///var/run/docker.sock"
+  targets          = discovery.relabel.docker_containers.output
+  forward_to       = [loki.write.default.receiver]
+  relabel_rules    = discovery.relabel.docker_containers.rules
+}
+
+local.file_match "nginx_access" {
+  path_targets = [{
+    __path__ = "/var/log/nginx/access.log",
+    job      = "nginx",
+    log_type = "access",
+  }]
+}
+
+loki.source.file "nginx_access" {
+  targets    = local.file_match.nginx_access.targets
+  forward_to = [loki.process.nginx_access.receiver]
+}
+
+loki.process "nginx_access" {
+  forward_to = [loki.write.default.receiver]
+
+  stage.json {
+    expressions = {
+      time         = "time",
+      remote_addr  = "remote_addr",
+      request      = "request",
+      status       = "status",
+      request_time = "request_time",
+      server_name  = "server_name",
+    }
+  }
+
+  stage.labels {
+    values = {
+      status      = "",
+      server_name = "",
+    }
+  }
+
+  stage.timestamp {
+    source = "time"
+    format = "RFC3339"
+  }
+}
+
+local.file_match "nginx_error" {
+  path_targets = [{
+    __path__ = "/var/log/nginx/error.log",
+    job      = "nginx",
+    log_type = "error",
+  }]
+}
+
+loki.source.file "nginx_error" {
+  targets    = local.file_match.nginx_error.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
