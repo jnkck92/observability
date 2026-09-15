@@ -32,3 +32,11 @@ scrape_configs:
         labels:
           app: monitor
           component: gateway
+
+  - job_name: 'keycloak'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['keycloak:9000']
+        labels:
+          app: einsatzlog112
+          component: auth
