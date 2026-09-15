@@ -5,6 +5,10 @@ global:
 
 scrape_configs:
 
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
   - job_name: 'einsatzlog112-backend'
     metrics_path: /actuator/prometheus
     static_configs:
@@ -20,3 +24,11 @@ scrape_configs:
         labels:
           app: monitor
           component: backend
+
+  - job_name: 'monitor-gateway'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ['monitor-gateway:8082']
+        labels:
+          app: monitor
+          component: gateway
