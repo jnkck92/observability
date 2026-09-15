@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:v1.19.2
     container_name: alloy
     networks: [ observability ]
     volumes:
