@@ -21,7 +21,7 @@ services:
       - ./loki/loki-config.yml:/etc/loki/config.yml
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:3.15.0-rc.0
     networks: [ observability ]
     ports: [ "127.0.0.1:9090:9090" ]
     volumes:
@@ -29,7 +29,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:1.19.2
     container_name: alloy
     networks: [ observability ]
     volumes:
