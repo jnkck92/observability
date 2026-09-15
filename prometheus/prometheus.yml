@@ -40,3 +40,7 @@ scrape_configs:
         labels:
           app: einsatzlog112
           component: auth
+
+  - job_name: 'node-exporter'
+    static_configs:
+    - targets: ['node-exporter:9100']
